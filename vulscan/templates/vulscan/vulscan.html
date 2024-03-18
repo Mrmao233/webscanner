@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+		<title>漏洞扫描</title>
+		<meta name="keywords" content="Vulnerability scanner">
+		<meta name="description" content="maverick0407">
+
+		<link rel="shortcut icon" href="../../static/favicon.ico">
+		<link href="../../static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+		<link href="../../static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+		<!-- Data Tables -->
+		<link href="../../static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+		<link href="../../static/css/animate.css" rel="stylesheet">
+		<link href="../../static/css/style.css?v=4.1.0" rel="stylesheet">
+		<link href="../../static/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+		<style>
+			.spinner-border {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: text-bottom;
+  border: .25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  color: purple; /* 指定颜色 */
+  -webkit-animation: spinner-border .75s linear infinite;
+          animation: spinner-border .75s linear infinite;
+}
+
+@-webkit-keyframes spinner-border {
+  to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-border {
+  to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+		</style>
+
+	</head>
+
+	<body class="gray-bg">
+		<div class="wrapper wrapper-content animated fadeInRight">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>请输入url
+							</h5>
+							<div class="ibox-tools">
+								<a class="collapse-link">
+									<i class="fa fa-chevron-up"></i>
+								</a>
+
+							</div>
+						</div>
+						<!--			url输入框开始-->
+						<div class="ibox-content">
+							<form id="scan-form" method="POST" action="{% url 'vulscan' %}">
+								{% csrf_token %}
+								<div class="form-group">
+									<label for="url_input">URL:</label>
+									<input type="text" class="form-control" id="url_input" name="url_input" required>
+								</div>
+								<button type="submit" class="btn btn-primary" id="scan-button">开始扫描</button>
+								<div class="btn-group">
+									<button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" id="scan-option-btn">
+										完全扫描 <span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu">
+										<li>
+											<a href="#" data-value="11">完全扫描</a>
+										</li>
+										<li>
+											<a href="#" data-value="12">仅扫描高风险漏洞</a>
+										</li>
+										<li>
+											<a href="#" data-value="16">仅扫描XSS漏洞</a>
+										</li>
+										<li>
+											<a href="#" data-value="13">仅扫描SQL注入漏洞</a>
+										</li>
+										<li>
+											<a href="#" data-value="15">仅扫描弱口令检测</a>
+										</li>
+										<li>
+											<a href="#" data-value="17">仅爬取</a>
+										</li>
+										<li>
+											<a href="#" data-value="20">仅扫描恶意软件</a>
+										</li>
+									</ul>
+								</div>
+
+								<input type="hidden" id="scan-option" name="scan_option" value="11">
+
+
+							</form>
+
+						</div>
+						<!--			url输入框结束-->
+
+					</div>
+
+					<!-- 提示信息元素 -->
+					<div id="messages">
+
+						{% for message in messages %}
+						<div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							{{ message }}
+						</div>
+						{% endfor %}
+					</div>
+					<!-- 提示信息元素 -->
+
+
+					<!-- Panel Other -->
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>扫描结果</h5>
+							<div class="ibox-tools">
+								<a class="collapse-link">
+									<i class="fa fa-chevron-up"></i>
+								</a>
+
+							</div>
+						</div>
+						<div class="ibox-content">
+							<div class="row row-lg">
+								<div class="col-sm-12">
+									<!-- Example Toolbar -->
+									<div class="example-wrap">
+
+										<div class="example">
+											<table id="exampleTableToolbar" data-mobile-responsive="true">
+												<thead>
+													<tr>
+														<th data-field="url" style="text-align: center;">目标域名</th>
+														<th data-field="scan_type" style="text-align: center;">扫描方式</th>
+														<th data-field="scan_time" style="text-align: center;">开始时间</th>
+														<th data-field="vul" data-formatter="vulFormatter" style="text-align: center;">漏洞</th>
+														<th data-field="stats" style="text-align: center;" data-formatter="statusFormatter">状态</th>
+
+													</tr>
+												</thead>
+											</table>
+										</div>
+									</div>
+									<!-- End Example Toolbar -->
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+					<!-- End Panel Other -->
+
+
+				</div>
+			</div>
+
+		</div>
+
+		<!-- 全局js -->
+		<script src="../../static/js/jquery.min.js?v=2.1.4"></script>
+		<script src="../../static/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+		<script src="../../static/js/plugins/jeditable/jquery.jeditable.js"></script>
+
+		<!-- Data Tables -->
+		<script src="../../static/js/plugins/dataTables/jquery.dataTables.js"></script>
+		<script src="../../static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+		<script src="../../static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+		<script src="../../static/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+		<script src="../../static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+		<!-- 自定义js -->
+		<script src="../../static/js/content.js?v=1.0.0"></script>
+		<!-- Peity -->
+		<script src="../../static/js/demo/bootstrap-table-demo.js"></script>
+
+
+		<!-- Page-Level Scripts -->
+<!--		<script>-->
+<!--			$(document).ready(function () {-->
+<!--									            $('.dataTables-example').dataTable();-->
+
+<!--									            /* Init DataTables */-->
+<!--									            var oTable = $('#editable').dataTable();-->
+
+<!--									            /* Apply the jEditable handlers to the table */-->
+<!--									            oTable.$('td').editable('../example_ajax.php', {-->
+<!--									                "callback": function (sValue, y) {-->
+<!--									                    var aPos = oTable.fnGetPosition(this);-->
+<!--									                    oTable.fnUpdate(sValue, aPos[0], aPos[1]);-->
+<!--									                },-->
+<!--									                "submitdata": function (value, settings) {-->
+<!--									                    return {-->
+<!--									                        "row_id": this.parentNode.getAttribute('id'),-->
+<!--									                        "column": oTable.fnGetPosition(this)[2]-->
+<!--									                    };-->
+<!--									                },-->
+
+<!--									                "width": "90%",-->
+<!--									                "height": "100%"-->
+<!--									            });-->
+
+
+<!--									        });-->
+
+<!--									        function fnClickAddRow() {-->
+<!--									            $('#editable').dataTable().fnAddData([-->
+<!--									                "Custom row",-->
+<!--									                "New row",-->
+<!--									                "New row",-->
+<!--									                "New row",-->
+<!--									                "New row"]);-->
+
+<!--									        }-->
+<!--		</script>-->
+
+		<!--		<script type="text/javascript" src="http://tajs.qq.com/stats?sId=9051096" charset="UTF-8"></script>-->
+		<!--统计代码，可删除-->
+		<script>
+			$(document).ready(function() {
+			    $('.dropdown-menu a').click(function() {
+			        var selectedOption = $(this).text();
+			        $('#scan-option-btn').text(selectedOption);
+					var option = $('#scan-option').val();
+			    	if (option === "") {
+			        $('#scan-option').val("11");
+				 }
+				 	else{
+				 	$('#scan-option').val($(this).data('value'));
+				 	}
+
+			    });
+			});
+		</script>
+
+		<!--此脚本自己写用来插入表格数据-->
+		<script>
+			function urlFormatter(value, row) {
+			var s = row.target_url;
+			if(row.status != 'failed')
+						{
+						  var scan_id = row.scan_id;
+						  var scan_session_id = row.scan_session_id;
+						  var html = '';
+						  html += '<a href="{% url "vul_detail" %}?scan_id=' + scan_id + '&scan_session_id=' + scan_session_id + '">' + s + '</a>';
+						  return html;
+						}
+			else
+						{
+						  var html = '';
+						  html += '<p>' + s + '</p>';
+						  return html;
+						}
+					}
+
+
+
+						function statusFormatter(value, row) {
+
+						var s = row.status;
+						var html = '';
+						  if (s == 'processing') {
+							html += '<div class="d-flex align-items-center">';
+							html += '<div class="spinner-border mr-2" role="status"><span class="sr-only">正在扫描</span></div>';
+							html += '<span>正在扫描...</span>';
+							html += '</div>';
+						  } else if (s == 'completed') {
+							html += '<span class="badge badge-success">完成</span>';
+						  } else {
+							html += '<span class="badge badge-failed">失败</span>';
+						  }
+						  return html;
+						}
+
+
+
+						function vulFormatter(value, row) {
+						  var vul_high = row.vul_high;
+						  var vul_medium = row.vul_medium;
+						  var vul_low = row.vul_low;
+						  var vul_info = row.vul_info
+
+						  var html = '';
+
+						  if (vul_high >= 0) {
+						    html += '<span class="label label-danger">' + vul_high + ' 高危</span> ';
+						  }
+						  if (vul_medium >= 0) {
+						    html += '<span class="label label-warning">' + vul_medium + ' 中危</span> ';
+						  }
+						  if (vul_low >= 0) {
+						    html += '<span class="label label-info">' + vul_low + ' 低危</span> ';
+						  }
+						  if (vul_info >= 0) {
+						    html += '<span class="label label-primary">' + vul_info + ' 警告</span> ';
+						  }
+
+						  return html;
+						}
+
+
+
+									$(document).ready(function() {
+												    var intervalId = setInterval(function() {
+												        $.ajax({
+												            url: "{% url 'vulscan_progress' %}",
+												            type: "POST",
+												            dataType: "json",
+												            success: function(data) {
+												                //console.log(data);
+
+												                if (data) {
+												                	var $table = $('#exampleTableToolbar');
+												                    //console.log('Task is running!');
+												                    var table_data = [];
+												                    var flag = 1;
+																	  // 循环ajax请求获得的数据并加载到表格
+																	  for(var i=0;i<data.scans.length;i++){
+																	  var scan = data.scans[i];
+																	  if(scan.current_session.status!='completed'){
+																	  	flag=0;
+																	  }
+																	  var row = {
+																		target_url:scan.target.address,
+																		scan_type:scan.profile_name,
+																		scan_time:scan.current_session.start_date,
+																		vul_high:scan.current_session.severity_counts.high,
+																		vul_low:scan.current_session.severity_counts.low,
+																		vul_medium:scan.current_session.severity_counts.medium,
+																		vul_info:scan.current_session.severity_counts.info,
+																		status:scan.current_session.status,
+																		scan_id:scan.scan_id,
+																		scan_session_id:scan.current_session.scan_session_id,
+																	  };
+																	  row.vul = vulFormatter(null, row);
+																	  row.stats = statusFormatter(null, row);
+																	  row.url = urlFormatter(null, row);
+																	  table_data.push(row);
+																	 }
+
+												                    $table.bootstrapTable('load', table_data);
+												                    //console.log(flag);
+												                    if(flag){
+												                    	clearInterval(intervalId);  // 停止定时器
+												                    }
+
+
+												                }
+
+												            },
+												            error: function(jqXHR, textStatus, errorThrown) {
+												                console.log("AJAX Error: " + textStatus + ", " + errorThrown);
+												                // TODO: 处理请求失败的情况
+												            }
+												        });
+												    }, 1000);
+												});
+		</script>
+	</body>
+
+</html>

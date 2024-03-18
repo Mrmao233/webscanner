@@ -1,0 +1,36 @@
+卷 新加卷 的文件夹 PATH 列表
+卷序列号为 F436-01F9
+E:.
+│  admin.py
+│  apps.py
+│  getinfo.py
+│  models.py
+│  tests.py
+│  tools_tree.txt
+│  urls.py
+│  views.py
+│  __init__.py
+│  
+├─migrations
+│  │  0001_initial.py
+│  │  0002_ctf_webs.py
+│  │  __init__.py
+│  │  
+│  └─__pycache__
+│          0001_initial.cpython-38.pyc
+│          0002_ctf_webs.cpython-38.pyc
+│          __init__.cpython-38.pyc
+│          
+├─templates
+│  └─tools
+│          commonly_used.html
+│          ctf_webs.html
+│          
+└─__pycache__
+        admin.cpython-38.pyc
+        apps.cpython-38.pyc
+        models.cpython-38.pyc
+        urls.cpython-38.pyc
+        views.cpython-38.pyc
+        __init__.cpython-38.pyc
+        

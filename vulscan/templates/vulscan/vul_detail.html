@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+		<title>漏洞详情页</title>
+		<meta name="keywords" content="Vulnerability scanner">
+		<meta name="description" content="maverick0407">
+
+		<link rel="shortcut icon" href="../../static/favicon.ico">
+		<link href="../../static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+		<link href="../../static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+		<!-- Morris -->
+		<link href="../../static/css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
+
+		<!-- Gritter -->
+		<link href="../../static/js/plugins/gritter/jquery.gritter.css" rel="stylesheet">
+
+		<link href="../../static/css/animate.css" rel="stylesheet">
+		<link href="../../static/css/style.css?v=4.1.0" rel="stylesheet">
+		<style>
+			.feed-activity-list tbody tr {
+    height: 60px; /* 修改行高为50px */
+    line-height: 50px; /* 修改行内文字的行高为50px */
+  }
+      tr:hover {
+        cursor: pointer;
+        background-color: #f5f5f5;
+    }
+   .content {
+  width: 100%;
+  max-width: 800px;
+}
+  .subdomains-frame {
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    background-color: #f7f7f7;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+  }
+  .subdomains-frame p {
+    margin: 5px 0;
+  }
+</style>
+
+
+	</head>
+
+	<body class="gray-bg">
+		<div class="wrapper wrapper-content">
+			<div class="row">
+				<div class="col-sm-4" style="width: 300px;">
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>扫描数据</h5>
+							<div class="ibox-tools">
+								<a class="collapse-link">
+									<i class="fa fa-chevron-up"></i>
+								</a>
+							</div>
+						</div>
+						<div class="ibox-content" style="height:200px;">
+							<div>
+								<div class="pull-right text-right">
+									<span id="sparkline8"></span>
+									<br />
+								</div>
+								<span class="label label-success">警告信息：{{vul_counts.current_session.severity_counts.info}}</span>
+								<br />
+								<br />
+								<span class="label label-primary">低危漏洞：{{vul_counts.current_session.severity_counts.low}}</span>
+								<br />
+								<br />
+								<span class="label label-warning-light">中危漏洞：{{vul_counts.current_session.severity_counts.medium}}</span>
+								<br />
+								<br />
+								<span class="label label-danger">高危漏洞：{{vul_counts.current_session.severity_counts.high}}</span>
+								<button class="btn btn-primary btn-block m-t" onclick="history.back()">
+									<i class="fa fa-arrow-up"></i> 返回上一页
+								</button>
+							</div>
+						</div>
+					</div>
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>扫描信息</h5>
+							<div class="ibox-tools">
+								<a class="collapse-link">
+									<i class="fa fa-chevron-up"></i>
+								</a>
+								<a class="dropdown-toggle" data-toggle="dropdown" href="index.html#">
+									<i class="fa fa-wrench"></i>
+								</a>
+								<ul class="dropdown-menu dropdown-user">
+									<li>
+										<a href="index.html#">选项1</a>
+									</li>
+									<li>
+										<a href="index.html#">选项2</a>
+									</li>
+								</ul>
+								<a class="close-link">
+									<i class="fa fa-times"></i>
+								</a>
+							</div>
+						</div>
+						<div class="ibox-content no-padding">
+							<ul class="list-group">
+								<li class="list-group-item">
+									<p>
+										<a class="text-info" href="index.html#">目标信息</a>
+									</p>
+									<p>目标域名：{{target_info.host}}</p>
+									<p>是否终止：{{target_info.aborted}}</p>
+									<p>终止原因：{{target_info.aborted_reason}}</p>
+									<p>操作系统：{{target_info.target_info.os}}</p>
+									<p>服务器/版本：{{target_info.target_info.server}}</p>
+									<p>响应状态：{{target_info.target_info.responsive}}</p>
+									{% if other_info.status == "processing" %}
+									<p>扫描进度： <i class="fa fa-spinner fa-spin"></i> 进行中</p>
+									{% elif other_info.status == "completed" %}
+									<p>扫描进度：已完成</p>
+									{% else %}
+									<p>扫描进度：未知状态</p>
+									{% endif %}
+									<small class="block text-muted">
+										<i class="fa fa-clock-o"></i> 开始时间：{{other_info.start_date}}
+									</small>
+								</li>
+								<li class="list-group-item">
+									<p>
+										<a class="text-info" href="index.html#">web扫描状态参数</a>
+									</p>
+									<p>位置：{{target_info.web_scan_status.locations}}</p>
+									<p>request数量：{{target_info.web_scan_status.request_count}}</p>
+									<p>平均响应时间：{{target_info.web_scan_status.avg_response_time}}</p>
+									<p>最大响应时间：{{target_info.web_scan_status.max_response_time}}</p>
+									<p>持续时间：{{latest_vuln_info.duration}}s</p>
+									<p>是否开始扫描：{{target_info.is_starting_host}}</p>
+									<div class="text-center m">
+										<!--										<span id="sparkline8"></span>-->
+
+									</div>
+									<small class="block text-muted">
+										<i class="fa fa-clock-o"></i> 结束时间：{{other_info.end_date}}
+									</small>
+								</li>
+
+								<li class="list-group-item">
+									<p>
+										<a class="text-info" href="index.html#">最近漏洞</a>
+									</p>
+									{% for latest_vuln in latest_vuln_info.vulns%}
+									<p>{% if latest_vuln.severity == 0 %}
+										<span class="label label-success">警</span>
+										{% elif latest_vuln.severity == 1 %}
+										<span class="label label-primary">低</span>
+										{% elif latest_vuln.severity == 2 %}
+										<span class="label label-warning">中</span>
+										{% elif latest_vuln.severity == 3 %}
+										<span class="label label-danger">高</span>
+										{% endif %}
+
+										{{ latest_vuln.name }}</p>
+									{% endfor %}
+								</li>
+								<li class="list-group-item">
+									<p>
+										<a class="text-info" href="index.html#">部分子域名</a>
+									</p>
+									<div class="subdomains-frame">
+										{% for host in target_info.external_hosts %}
+										<p>{{ host }}</p>
+										{% endfor %}
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-4" style="width: 800px;">
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>漏洞列表</h5>
+							<div class="ibox-tools">
+								<span class="label label-success">警告</span>
+								<span class="label label-primary">低位</span>
+								<span class="label label-warning-light">中危</span>
+								<span class="label label-danger">高危</span>
+							</div>
+						</div>
+						<div class="ibox-content">
+							<div>
+								<form>
+									<button class="btn btn-danger " type="button">
+										<i class="fa fa-download"></i>&nbsp;&nbsp;<span class="bold">下载pdf报告</span>
+									</button>
+									<button class="btn btn-info " type="button">
+										<i class="fa fa-download"></i>&nbsp;&nbsp;<span class="bold">下载html报告</span>
+									</button>
+									<div class="btn-group">
+										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="report-option-btn">
+											选择报告类型 <span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu">
+											<li>
+												<a href="#" data-value="15">Affected Items</a>
+											</li>
+											<li>
+												<a href="#" data-value="16">CWE 2011</a>
+											</li>
+											<li>
+												<a href="#" data-value="11">Developer</a>
+											</li>
+											<li>
+												<a href="#" data-value="13">Executive Summary</a>
+											</li>
+											<li>
+												<a href="#" data-value="14">HIPAA</a>
+											</li>
+											<li>
+												<a href="#" data-value="17">ISO 27001</a>
+											</li>
+											<li>
+												<a href="#" data-value="18">NIST SP800 53</a>
+											</li>
+											<li>
+												<a href="#" data-value="19">OWASP Top 10 2013</a>
+											</li>
+											<li>
+												<a href="#" data-value="20">PCI DSS 3.2</a>
+											</li>
+											<li>
+												<a href="#" data-value="12">Quick</a>
+											</li>
+											<li>
+												<a href="#" data-value="21">Sarbanes Oxley</a>
+											</li>
+											<li>
+												<a href="#" data-value="24">Scan Comparison</a>
+											</li>
+											<li>
+												<a href="#" data-value="22">STIG DISA</a>
+											</li>
+											<li>
+												<a href="#" data-value="23">WASC Threat Classification</a>
+											</li>
+											<input type="hidden" id="report-option" name="report_option" value="12">
+										</ul>
+									</div>
+								</form>
+							</div>
+							<div>
+								<div class="feed-activity-list">
+									<!-- Example Toolbar -->
+									<div class="example-wrap">
+
+										<div class="example">
+											<table id="exampleTableToolbar" data-mobile-responsive="true">
+												<thead>
+													<tr>
+														<th data-field="severity" style="text-align: center;">严重性</th>
+														<th data-field="vul_name" style="text-align: center;">漏洞名称</th>
+														<th data-field="vul_number" style="text-align: center;">漏洞编号</th>
+														<th data-field="vul_url" style="text-align: center;">漏洞相关url</th>
+														<th data-field="parameter" style="text-align: center;">参数</th>
+														<th data-field="stats" style="text-align: center;">状态</th>
+														<th data-field="confidence" style="text-align: center;">可信度</th>
+													</tr>
+												<tbody>
+													{% for vul in vul_info %}
+													<tr class="vul-row" data-vul_id="{{vul.vuln_id}}" data-scan_id="{{scan_id}}" data-scan_session_id="{{scan_session_id}}">
+														<td style="text-align: center;">
+															{% if vul.severity == 0 %}
+															<span class="label label-success">警告</span>
+															{% elif vul.severity == 1 %}
+															<span class="label label-primary">低</span>
+															{% elif vul.severity == 2 %}
+															<span class="label label-warning">中</span>
+															{% elif vul.severity == 3 %}
+															<span class="label label-danger">高</span>
+															{% endif %}
+														</td>
+														<td style="text-align: center;">
+															<b>{{vul.tags.0}}</b>
+														</td>
+														<td style="text-align: center;">
+															<b>{{vul.tags.1}}</b>
+														</td>
+														<td style="text-align: center;">
+															<strong>{{vul.affects_url}}</strong>
+														</td>
+														<td style="text-align: center;">
+															<strong>{{vul.affects_detail}}</strong>
+														</td>
+														<td style="text-align: center;">
+															<strong>{{vul.status}}</strong>
+														</td>
+														<td style="text-align: center;">
+															<b>{{vul.confidence}}</b>
+														</td>
+													</tr>
+													{% endfor %}
+												</tbody>
+												</thead>
+											</table>
+										</div>
+									</div>
+									<!-- End Example Toolbar -->
+
+
+								</div>
+
+
+
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-4">
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>漏洞详细内容</h5>
+							<div class="ibox-tools">
+								<a class="collapse-link">
+									<i class="fa fa-chevron-up"></i>
+								</a>
+
+							</div>
+						</div>
+						<div class="ibox-content ibox-heading">
+							<h3 id="vuln_name"></h3>
+							<small id="vuln_number">
+								<i class="fa fa-map-marker"></i>
+							</small>
+						</div>
+						<div class="ibox-content timeline">
+
+							<div class="timeline-item">
+								<div class="row">
+
+									<div class="col-xs-7 content no-top-border">
+										<p class="m-b-xs">
+											<h2>
+												<strong>漏洞简述</strong>
+											</h2>
+										</p>
+
+										<p id="vuln-description"></p>
+
+									</div>
+								</div>
+							</div>
+
+							<div class="timeline-item">
+								<div class="row">
+									<div class="col-xs-7 content">
+										<p class="m-b-xs">
+											<h2>
+												<strong>Classfication</strong>
+											</h2>
+										</p>
+
+										<p class="m-b-xs" id="classfication">
+
+									</div>
+								</div>
+							</div>
+
+							<div class="timeline-item">
+								<div class="row">
+									<div class="col-xs-7 content">
+										<p class="m-b-xs">
+											<h2>
+												<strong>详细内容</strong>
+											</h2>
+										</p>
+										<p class="m-b-xs" id="vuln_detail">
+
+										</p>
+									</div>
+								</div>
+							</div>
+							<div class="timeline-item">
+								<div class="row">
+									<div class="col-xs-7 content">
+										<p class="m-b-xs">
+											<h2>
+												<strong>建议</strong>
+											</h2>
+										</p>
+										<p class="m-b-xs" id="recommendation">
+
+										</p>
+									</div>
+								</div>
+							</div>
+							<div class="timeline-item">
+								<div class="row">
+									<div class="col-xs-7 content">
+										<p class="m-b-xs">
+											<h2>
+												<strong>可能产生的影响</strong>
+											</h2>
+										</p>
+										<p class="m-b-xs" id="possbile_impact">
+
+										</p>
+									</div>
+								</div>
+							</div>
+							<div class="timeline-item">
+								<div class="row">
+									<div class="col-xs-7 content">
+										<p class="m-b-xs">
+											<h2>
+												<strong>request请求</strong>
+											</h2>
+										</p>
+										<p class="m-b-xs">
+											<pre><span class=\"bb-blue\" id="request"></span></pre>
+
+										</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="timeline-item">
+								<div class="row">
+									<div class="col-xs-7 content">
+										<p class="m-b-xs">
+											<h2>
+												<strong>引用</strong>
+											</h2>
+										</p>
+										<p class="m-b-xs" id="reference">
+
+										</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="timeline-item">
+								<div class="row">
+									<div class="col-xs-7 content">
+										<p class="m-b-xs">
+											<h2>
+												<strong>相关参数</strong>
+											</h2>
+										</p>
+										<p class="m-b-xs" id="parameter">
+
+										</p>
+									</div>
+								</div>
+							</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- 全局js -->
+		<script src="../../static/js/jquery.min.js?v=2.1.4"></script>
+		<script src="../../static/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+		<!-- Flot -->
+		<script src="../../static/js/plugins/flot/jquery.flot.js"></script>
+		<script src="../../static/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+		<script src="../../static/js/plugins/flot/jquery.flot.spline.js"></script>
+		<script src="../../static/js/plugins/flot/jquery.flot.resize.js"></script>
+		<script src="../../static/js/plugins/flot/jquery.flot.pie.js"></script>
+
+		<!-- Peity -->
+		<script src="../../static/js/plugins/peity/jquery.peity.min.js"></script>
+		<script src="../../static/js/demo/peity-demo.js"></script>
+
+		<!-- 自定义js -->
+		<script src="../../static/js/content.js?v=1.0.0"></script>
+
+
+		<!-- jQuery UI -->
+		<script src="../../static/js/plugins/jquery-ui/jquery-ui.min.js"></script>
+
+		<!-- GITTER -->
+		<script src="../../static/js/plugins/gritter/jquery.gritter.min.js"></script>
+
+		<!-- EayPIE -->
+		<script src="../../static/js/plugins/easypiechart/jquery.easypiechart.js"></script>
+
+		<!-- Sparkline -->
+		<script src="../../static/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+		<script>
+			$("#sparkline8").sparkline([{{vul_counts.current_session.severity_counts.info}}, {{vul_counts.current_session.severity_counts.low}},{{vul_counts.current_session.severity_counts.medium}},{{vul_counts.current_session.severity_counts.high}}], {
+						        type: 'pie',
+						        height: '120px',
+						        //width:'100px',
+						        sliceColors: ["#1c84c4", "#1cb494","#fcac5c","#ec5464"]});
+		</script>
+		<!-- Sparkline demo data  -->
+		<!--		<script src="../../static/js/demo/sparkline-demo.js"></script>-->
+
+		<!-- Data Tables -->
+		<script src="../../static/js/plugins/dataTables/jquery.dataTables.js"></script>
+		<script src="../../static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+		<script src="../../static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+		<script src="../../static/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+		<script src="../../static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+		<!-- 自定义js -->
+		<script src="../../static/js/content.js?v=1.0.0"></script>
+		<!-- Peity -->
+		<script src="../../static/js/demo/bootstrap-table-demo.js"></script>
+		<!--下载报告-->
+		<script>
+			$(document).ready(function() {
+			  // 点击下载PDF按钮
+			  $('.btn-danger').click(function() {
+			  	// 判断任务是否已经完成
+			  	var status = '{{other_info.status}}';
+			  	if(status!='completed'){
+			  	WinMove();
+				$.gritter.add({
+					title: '<p>扫描正在进行中或扫描失败</p>',
+					text: '请等待扫描完成后再尝试生成报告！！！',
+					time: 10000
+				});
+				return;
+			  	}
+
+			    var reportOption = $('#report-option').val();
+			    var reportType = $('a[data-value="' + reportOption + '"]').text();
+			    var report_type = $(this).text().trim();
+			    var scan_id = '{{scan_id}}';
+			  	WinMove();
+				$.gritter.add({
+					title: '<p>报告类型:<strong>'+reportType+'</strong></p>',
+					text: 'PDF报告生成中，请稍等........',
+					time: 10000
+				});
+			    console.log(reportOption);
+			    console.log(reportType);
+			    console.log(report_type);
+			    console.log(scan_id);
+			    $.ajax({
+			      url: "{% url 'vul_report' %}",
+			      method: 'GET',
+			      data: {"report_option":reportOption, "report_type": report_type, "scan_id":scan_id},
+			      success: function(response) {
+			      	var pdf_url = "https://localhost:3443/"+response.reports[0].download[1];
+			        console.log(pdf_url);
+			        window.location.href = pdf_url;
+			        WinMove();
+					$.gritter.add({
+						title: '<p>报告类型:<strong>'+reportType+'</strong></p>',
+						text: 'PDF报告生成完毕，如未开始下载，请点击<a href="'+ pdf_url +'" class="text-danger">此处</a>',
+						time: 100000000000
+					});
+
+			      }
+			    });
+			  });
+
+			  // 点击下载HTML按钮
+			  $('.btn-info').click(function() {
+			  	// 判断任务是否已经完成
+			  	var status = '{{other_info.status}}';
+			  	if(status!='completed'){
+			  	WinMove();
+				$.gritter.add({
+					title: '<p>扫描正在进行中或扫描失败</p>',
+					text: '请等待扫描完成后再尝试生成报告！！！',
+					time: 10000
+				});
+				return;
+			  	}
+
+			    var reportOption = $('#report-option').val();
+			    var reportType = $('a[data-value="' + reportOption + '"]').text();
+			    var report_type = $(this).text().trim();
+			    var scan_id = '{{scan_id}}';
+			  	WinMove();
+				$.gritter.add({
+					title: '<p>报告类型:<strong>'+reportType+'</strong></p>',
+					text: 'HTML报告生成中，请稍等........',
+					time: 10000
+				});
+			    $.ajax({
+			      url: "{% url 'vul_report' %}",
+			      method: 'GET',
+			      data: {"report_option":reportOption, "report_type": report_type, "scan_id":scan_id},
+			      success: function(response) {
+			      	var html_url = "https://localhost:3443/"+response.reports[0].download[0];
+			        console.log(html_url);
+			        window.location.href = html_url;
+			        WinMove();
+					$.gritter.add({
+						title:'<p>报告类型:<strong>'+reportType+'</strong></p>',
+						text: 'HTML报告生成完毕，如未开始下载，请点击<a href="'+ html_url +'" class="text-danger">此处</a>',
+						time: 100000000000
+					});
+			      }
+			    });
+			  });
+
+			  // 更新多项选择按钮
+			  $('ul.dropdown-menu li a').click(function() {
+			    var value = $(this).data('value');
+			    var text = $(this).text();
+			    $('#report-option-btn').html(text + ' <span class="caret"></span>');
+			    $('#report-option').val(value);
+			  });
+			});
+		</script>
+		<script>
+			$(document).ready(function() {
+									// 为每一行添加点击事件
+									  $('.vul-row').click(function() {
+									    var vul_id = $(this).data('vul_id');
+									    var scan_id = $(this).data('scan_id');
+									    var scan_session_id = $(this).data('scan_session_id');
+									    console.log(vul_id,scan_id,scan_session_id);
+									    // 发送 ajax 请求获取相应的漏洞信息
+									    $.ajax({
+									      url: "{% url 'vul_detail_info' %}",
+									      type: 'GET',
+									      data:{"vuln_id": vul_id,"scan_id":scan_id,"scan_session_id":scan_session_id},
+									      dataType: 'json',
+									      success: function(data) {
+									      	console.log(data);
+									      	$('#vuln_name').html(data.tags[0]);
+									      	$('#vuln_number').html(data.tags[1]);
+									      	$('#vuln-description').html(data.description);
+									      	html = '';
+									      	html += '<p class="m-b-xs"><strong>cvss2:</strong>'+data.cvss2+'</p></br>' + '<p class="m-b-xs"><strong>cvss3:</strong>'+data.cvss3+'</p></br>' + '<p class="m-b-xs"><strong>cvss分数:</strong>'+data.cvss_score+'</p></br>'
+									      	$('#classfication').html(html);
+									      	$('#vuln_detail').html(data.details);
+									      	$('#possbile_impact').html(data.recommendation);
+									      	$('#recommendation').html(data.impact);
+									      	$('#request').html(data.request);
+									      	html = '';
+									      	for(var i=0;i<data.references.length;i++){
+									      				html+='<a href="'+data.references[i].href +'" >'+ data.references[i].rel + '</a></br>';
+									      	}
+									      	$('#reference').html(html);
+
+									      	html = '<p class="m-b-xs"><strong>payload来源:</strong>'+data.source+'</p></br>'+'<p class="m-b-xs"><strong>任务id:</strong>'+data.target_id+'</p></br>'+'<p class="m-b-xs"><strong>当前任务漏洞类型id:</strong>'+data.vuln_id+'</p></br>'+'<p class="m-b-xs"><strong>当前任务漏洞id:</strong>'+data.vt_id+'</p></br>'+  '<p class="m-b-xs"><strong>当前任务漏洞名称:</strong>'+data.vt_name+'</p></br>'  ;
+											$('#parameter').html(html);
+
+
+									        // 处理返回的漏洞信息
+
+									      },
+									      error: function(jqXHR, textStatus, errorThrown) {
+									        console.log(textStatus, errorThrown);
+									      }
+									    });
+									  });
+									  });
+		</script>
+
+
+
+
+
+
+
+
+		<script>
+			$(document).ready(function () {
+												            WinMove();
+												            //setTimeout(function () {
+												                //$.gritter.add({
+												                    //title: '您有2条未读信息',
+												                    //text: '请前往<a href="mailbox.html" class="text-warning">收件箱</a>查看今日任务',
+												                    //time: 10000
+												                //});
+												            //}, 2000);
+
+
+												            $('.chart').easyPieChart({
+												                barColor: '#f8ac59',
+												                //                scaleColor: false,
+												                scaleLength: 5,
+												                lineWidth: 4,
+												                size: 80
+												            });
+
+												            $('.chart2').easyPieChart({
+												                barColor: '#1c84c6',
+												                //                scaleColor: false,
+												                scaleLength: 5,
+												                lineWidth: 4,
+												                size: 80
+												            });
+
+												            var data1 = [
+												                [0, 4], [1, 8], [2, 5], [3, 10], [4, 4], [5, 16], [6, 5], [7, 11], [8, 6], [9, 11], [10, 30], [11, 10], [12, 13], [13, 4], [14, 3], [15, 3], [16, 6]
+												            ];
+												            var data2 = [
+												                [0, 1], [1, 0], [2, 2], [3, 0], [4, 1], [5, 3], [6, 1], [7, 5], [8, 2], [9, 3], [10, 2], [11, 1], [12, 0], [13, 2], [14, 8], [15, 0], [16, 0]
+												            ];
+												            $("#flot-dashboard-chart").length && $.plot($("#flot-dashboard-chart"), [
+												                data1, data2
+												            ], {
+												                series: {
+												                    lines: {
+												                        show: false,
+												                        fill: true
+												                    },
+												                    splines: {
+												                        show: true,
+												                        tension: 0.4,
+												                        lineWidth: 1,
+												                        fill: 0.4
+												                    },
+												                    points: {
+												                        radius: 0,
+												                        show: true
+												                    },
+												                    shadowSize: 2
+												                },
+												                grid: {
+												                    hoverable: true,
+												                    clickable: true,
+												                    tickColor: "#d5d5d5",
+												                    borderWidth: 1,
+												                    color: '#d5d5d5'
+												                },
+												                colors: ["#1ab394", "#464f88"],
+												                xaxis: {},
+												                yaxis: {
+												                    ticks: 4
+												                },
+												                tooltip: false
+												            });
+												        });
+		</script>
+
+		<script type="text/javascript" src="http://tajs.qq.com/stats?sId=9051096" charset="UTF-8"></script>
+		<!--统计代码，可删除-->
+
+	</body>
+
+</html>

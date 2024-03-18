@@ -1,0 +1,309 @@
+@charset "UTF-8";
+@font-face {
+  font-family: NeueMachina-Regular;
+  font-weight: 400;
+  src: url(../fonts/NeueMachina-Regular.woff2) format("truetype");
+}
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: rgb(22, 30, 49);
+}
+
+.box {
+  width: 80vw;
+  height: 80vh;
+  background: url(../images/bg.jpg);
+  background-attachment: fixed;
+  background-size: cotain;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 30px;
+  font-family: NeueMachina-Regular;
+  overflow: hidden;
+}
+.box .forms {
+  width: 50%;
+  height: 100%;
+  background-color: rgb(45, 50, 80);
+  border-radius: 30px 0 0 30px;
+  color: rgb(255, 255, 255);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+}
+.box .forms .tips {
+  width: 70%;
+  height: 10%;
+  box-sizing: border-box;
+  font-size: 25px;
+  margin: 4vh;
+}
+.box .forms .tips span {
+  margin: 0 10px 0 0;
+  cursor: pointer;
+  padding-bottom: 5px;
+  transition: 0.1s;
+  color: rgb(100, 108, 154);
+}
+.box .forms .tips span:hover {
+  border-bottom: 4px solid rgb(249, 177, 122);
+  color: #fff;
+}
+.box .forms .tips .login-btn {
+  border-bottom: 4px solid rgb(249, 177, 122);
+  color: #fff;
+}
+.box .forms .login,
+.box .forms .register,
+.box .forms .fogot-pwd {
+  width: 70%;
+  top: 20%;
+}
+.box .forms .login .form-title h1,
+.box .forms .register .form-title h1,
+.box .forms .fogot-pwd .form-title h1 {
+  margin-bottom: 10px;
+}
+.box .forms .login .form,
+.box .forms .register .form,
+.box .forms .fogot-pwd .form {
+  margin-top: 3vw;
+}
+.box .forms .login .form .username::before,
+.box .forms .register .form .username::before,
+.box .forms .fogot-pwd .form .username::before {
+  content: "UserName";
+}
+.box .forms .login .form .password::before,
+.box .forms .register .form .password::before,
+.box .forms .fogot-pwd .form .password::before {
+  content: "Password";
+}
+.box .forms .login .form .conform-password::before,
+.box .forms .register .form .conform-password::before,
+.box .forms .fogot-pwd .form .conform-password::before {
+  content: "Conform Password";
+}
+.box .forms .login .form .code,
+.box .forms .register .form .code,
+.box .forms .fogot-pwd .form .code {
+  position: relative;
+}
+.box .forms .login .form .code::before,
+.box .forms .register .form .code::before,
+.box .forms .fogot-pwd .form .code::before {
+  content: "Code";
+}
+.box .forms .login .form .code .veri-code-tips,
+.box .forms .register .form .code .veri-code-tips,
+.box .forms .fogot-pwd .form .code .veri-code-tips {
+  position: absolute;
+  right: 20px;
+  top: 36px;
+  color: rgb(113, 123, 185);
+  cursor: pointer;
+}
+.box .forms .login .form .input-item,
+.box .forms .register .form .input-item,
+.box .forms .fogot-pwd .form .input-item {
+  width: 100%;
+  height: 70px;
+  margin: 10px 0;
+  transition: 0.5s;
+}
+.box .forms .login .form .input-item::before,
+.box .forms .register .form .input-item::before,
+.box .forms .fogot-pwd .form .input-item::before {
+  display: block;
+  position: absolute;
+  color: rgb(100, 108, 154);
+  padding: 10px 5px 1px 20px;
+  font-size: 14px;
+}
+.box .forms .login .form .input-item input,
+.box .forms .register .form .input-item input,
+.box .forms .fogot-pwd .form .input-item input {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(66, 71, 105);
+  outline: none;
+  border: 0;
+  padding: 20px 5px 1px 20px;
+  box-sizing: border-box;
+  color: #fff;
+  font-size: 20px;
+}
+.box .forms .login .form .input-item input:focus,
+.box .forms .register .form .input-item input:focus,
+.box .forms .fogot-pwd .form .input-item input:focus {
+  border-left: 3px solid rgb(255, 187, 124);
+}
+.box .forms .login .form .other-select,
+.box .forms .register .form .other-select,
+.box .forms .fogot-pwd .form .other-select {
+  display: flex;
+  justify-content: space-between;
+  color: rgb(100, 108, 154);
+  margin-top: 1vw;
+}
+.box .forms .login .form .other-select #check:checked + .rem-pwd-tips,
+.box .forms .register .form .other-select #check:checked + .rem-pwd-tips,
+.box .forms .fogot-pwd .form .other-select #check:checked + .rem-pwd-tips {
+  color: #fff;
+}
+.box .forms .login .form .other-select input[type=checkbox],
+.box .forms .register .form .other-select input[type=checkbox],
+.box .forms .fogot-pwd .form .other-select input[type=checkbox] {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  position: relative;
+  border: 0;
+}
+.box .forms .login .form .other-select input[type=checkbox]::after,
+.box .forms .register .form .other-select input[type=checkbox]::after,
+.box .forms .fogot-pwd .form .other-select input[type=checkbox]::after {
+  position: absolute;
+  top: 0;
+  color: #000;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  visibility: visible;
+  padding-left: 0;
+  text-align: center;
+  background-color: rgb(66, 71, 105);
+  content: " ";
+}
+.box .forms .login .form .other-select input[type=checkbox]:checked::after,
+.box .forms .register .form .other-select input[type=checkbox]:checked::after,
+.box .forms .fogot-pwd .form .other-select input[type=checkbox]:checked::after {
+  content: "✓";
+  color: rgb(249, 177, 122);
+  font-size: 30px;
+  line-height: 20px;
+  background-color: rgb(66, 71, 105);
+  border: 1px solid rgb(249, 177, 122);
+  border-radius: 5px;
+}
+.box .forms .login .form .other-select .rem-pwd .rem-pwd-tips,
+.box .forms .register .form .other-select .rem-pwd .rem-pwd-tips,
+.box .forms .fogot-pwd .form .other-select .rem-pwd .rem-pwd-tips {
+  cursor: pointer;
+}
+.box .forms .login .form .other-select .fogot-pwd-btn,
+.box .forms .register .form .other-select .fogot-pwd-btn,
+.box .forms .fogot-pwd .form .other-select .fogot-pwd-btn {
+  cursor: pointer;
+  color: rgb(100, 108, 154);
+}
+.box .forms .login .form .btn,
+.box .forms .register .form .btn,
+.box .forms .fogot-pwd .form .btn {
+  width: 40%;
+  height: 50px;
+  cursor: pointer;
+  border: 0;
+  background-color: rgb(249, 177, 122);
+  color: rgb(45, 50, 80);
+  margin: 10px 0;
+  border-radius: 5px;
+  font-size: 20px;
+  box-shadow: 0px 0px 10px rgb(249, 177, 122);
+  transition: 0.3s;
+  margin-top: 3vw;
+  font-family: NeueMachina-Regular;
+}
+.box .forms .login .form .btn:hover,
+.box .forms .register .form .btn:hover,
+.box .forms .fogot-pwd .form .btn:hover {
+  box-shadow: 0px 0px 15px rgb(249, 177, 122);
+}
+.box .forms .login .form .other-login,
+.box .forms .register .form .other-login,
+.box .forms .fogot-pwd .form .other-login {
+  color: rgb(100, 108, 154);
+  margin-top: 5vw;
+  font-weight: 900;
+  display: flex;
+  align-items: baseline;
+}
+.box .forms .login .form .other-login .login-img img,
+.box .forms .register .form .other-login .login-img img,
+.box .forms .fogot-pwd .form .other-login .login-img img {
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.box .forms .login .form .other-login span,
+.box .forms .register .form .other-login span,
+.box .forms .fogot-pwd .form .other-login span {
+  display: inline-block;
+  margin-right: 2vw;
+}
+.box .forms .login {
+  position: absolute;
+  opacity: 1;
+  z-index: 10;
+  animation: into 1s ease;
+}
+.box .forms .register {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+.box .forms .fogot-pwd {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+
+@media (max-width: 1024px) {
+  .box {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  .box .forms {
+    width: 100%;
+    border-radius: 0;
+  }
+  .box .forms .other-select {
+    justify-content: flex-end !important;
+  }
+  .box .forms .other-select .rem-pwd {
+    display: none;
+  }
+  .box .forms .other-login {
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+  }
+  .box .forms .other-login .login-img {
+    position: absolute;
+    right: 0;
+    top: 5vh;
+  }
+}
+@keyframes into {
+  0% {
+    transform: translateY(5vh);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漏洞扫描器</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noty@3.1.4/lib/noty.css">
+    <link rel="stylesheet" href="{% static 'login/css/style.css' %}">
+<!--    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">-->
+    <link href="{% static 'css/font-awesome.css' %}" rel="stylesheet">
+    <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="box">
+        <div class="forms">
+            <div class="tips">
+                <span class="login-btn">login</span>
+                <span class="register-btn">register</span>
+            </div>
+            <div class="login">
+                <div class="form-title">
+                    <h1>漏洞扫描器</h1>
+                    <h2>By@maverick0407</h2>
+                </div>
+                <div id="messages">
+                    {% for message in messages %}
+                      <script src="https://cdn.jsdelivr.net/npm/noty@3.1.4/lib/noty.js"></script>
+                      <script>
+                      // 创建 Noty 对象
+                      var messages = '{{message}}';
+                      var tag = '{{ message.tags }}'
+                      console.log(messages);
+                      var noty = new Noty({
+                        type: tag, // 根据消息类型设置对应的样式
+                        layout: 'topLeft', // 设置消息提示框的布局位置
+                        text: messages, // 设置消息内容
+                        timeout: 5000 // 消息提示框显示时间（毫秒）
+                      });
+                      noty.show(); // 显示消息提示框
+                      </script>
+                    {% endfor %}
+                </div>
+                <div class="form">
+                    <form action="" method="POST">
+                    <div class="username input-item">
+                        <input type="text" class="ipts" name="username" id="username">
+                    </div>
+                    <div class="password input-item">
+                        <input type="password" class="ipts" name="password" id="password">
+                    </div>
+                    <div class="other-select">
+                        <div class="rem-pwd">
+                            <input type="checkbox" id="check">
+                            <label for="check" class="rem-pwd-tips">remember password</label>
+                        </div>
+                    </div>
+                    <button class="btn" type="submit">Login</button>
+                    </form>
+                </div>
+            </div>
+            <div class="register">
+                <div class="form-title">
+                    <h1>用户注册</h1>
+                    <h2>请输入以下信息来注册您的账号</h2>
+                </div>
+                <div class="form">
+                    <form id="register-form" action="{% url 'register' %}" method="POST">
+                        <div class="username input-item">
+                            <input type="text" class="ipts" name="register_username">
+                        </div>
+                        <div class="password input-item">
+                            <input type="password" class="ipts" name="register_password">
+                        </div>
+                        <div class="conform-password input-item" name="confirm_password">
+                            <input type="password" class="ipts">
+                        </div>
+                        <button id="rebtn" class="btn">Register</button>
+                    </form>
+
+                </div>
+            </div>
+            <div class="fogot-pwd">
+                <div class="form-title">
+                    <h1>fogot-pwd</h1>
+                    <h4>One click triple connection</h4>
+                </div>
+                <div class="form">
+                    <div class="username input-item">
+                        <input type="text" class="ipts">
+                    </div>
+                    <div class="password input-item">
+                        <input type="password" class="ipts" id="re_password">
+                    </div>
+                    <div class="code input-item">
+                        <input type="text" class="ipts" id="confirm_re_password">
+                        <span class="veri-code-tips">Click To Get</span>
+                    </div>
+                    <button class="btn">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <!-- 全局js -->
+    <script src="{% static 'js/jquery.min.js'%}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- 自定义js -->
+    <script src="../../static/js/content.js?v=1.0.0"></script>
+</body>
+<!--<script>-->
+<!--  var form = document.getElementById('register-form');-->
+
+<!--  var register_Btn = document.getElementById('rebtn');-->
+<!--  var reSpan = document.querySelector('.register-btn');-->
+
+<!--  reSpan.addEventListener('click', function() {-->
+<!--  var checkInterval = setInterval(function() {-->
+<!--    var passwordvalue = document.getElementById('re_password');-->
+<!--    var confirmpasswordvalue = document.getElementById('confirm_re_password');-->
+<!--    if (passwordvalue.value !== confirmpasswordvalue.value) {-->
+<!--      register_Btn.disabled = true;-->
+<!--      console.log('不相等');-->
+<!--      console.log(passwordvalue.value);-->
+<!--    } else {-->
+<!--      register_Btn.disabled = false;-->
+<!--      console.log('相等');-->
+<!--    }-->
+<!--    //clearInterval(checkInterval);-->
+<!--  }, 100);-->
+<!--  });-->
+<!--</script>-->
+
+<script>
+
+    const login = document.querySelector('.login')
+    const register = document.querySelector('.register')
+    const fogotPwd = document.querySelector('.fogot-pwd')
+    const registerBtn = document.querySelector('.register-btn')
+    const loginBtn = document.querySelector('.login-btn')
+    const fogotPwdBtn = document.querySelector('.fogot-pwd-btn')
+    const veriCodeTips = document.querySelector('.veri-code-tips');
+    let reckonTimeFlag = 5; //倒计时
+    let reckonTime; //定时器
+    //定时器
+    function countDown() {
+        veriCodeTips.innerHTML = `RESEND(${reckonTimeFlag})`
+        reckonTimeFlag--;
+        if (reckonTimeFlag < 0) {
+            clearInterval(reckonTime);
+            reckonTimeFlag = 5;
+            veriCodeTips.innerHTML = `Click To Get`;
+            veriCodeTips.style.color = "rgb(113 123 185)";
+            veriCodeTips.onclick = veriCodeTipsClick;
+        }
+    }
+
+    //点击事件触发的方法
+    function veriCodeTipsClick() {
+        veriCodeTips.onclick = null;
+        veriCodeTips.style.color = "rgb(153, 151, 151)";
+        reckonTime = setInterval(countDown, 1000);
+        countDown();
+    }
+
+    veriCodeTips.addEventListener('click', function () {
+        veriCodeTipsClick()
+    })
+    registerBtn.addEventListener('click', function () {
+        login.style.opacity = '0'
+        fogotPwd.style.opacity = '0'
+        register.style.opacity = '1'
+        login.style.zIndex = '-1'
+        fogotPwd.style.zIndex = '-1'
+        register.style.zIndex = '10'
+        register.style.animation = 'into 1s ease'
+        login.style.animation = 'none'
+        fogotPwd.style.animation = 'none'
+        registerBtn.style.borderBottom = '4px solid rgb(249, 177, 122)'
+        registerBtn.style.color = '#fff'
+        loginBtn.style.borderBottom = 'none'
+        loginBtn.style.color = 'rgb(100, 108, 154)'
+    })
+    loginBtn.addEventListener('click', function () {
+        login.style.opacity = '1'
+        register.style.opacity = '0'
+        fogotPwd.style.opacity = '0'
+        login.style.zIndex = '10'
+        fogotPwd.style.zIndex = '-1'
+        register.style.zIndex = '-1'
+        login.style.animation = 'into 1s ease'
+        register.style.animation = 'none'
+        fogotPwd.style.animation = 'none'
+        registerBtn.style.borderBottom = ''
+        registerBtn.style.color = 'rgb(100, 108, 154)'
+        loginBtn.style.borderBottom = '4px solid rgb(249, 177, 122)'
+        loginBtn.style.color = '#fff'
+    })
+    fogotPwdBtn.addEventListener('click', function () {
+        fogotPwd.style.opacity = '1'
+        login.style.opacity = '0'
+        register.style.opacity = '0'
+        login.style.zIndex = '-1'
+        fogotPwd.style.zIndex = '10'
+        register.style.zIndex = '-1'
+        fogotPwd.style.animation = 'into 1s ease'
+        register.style.animation = 'none'
+        login.style.animation = 'none'
+
+    })
+</script>
+
+</html>

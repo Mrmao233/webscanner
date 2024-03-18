@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>CTF网站</title>
+    <meta name="keywords" content="Vulnerability scanner">
+    <meta name="description" content="maverick0407">
+
+    <link rel="shortcut icon" href="favicon.ico"> <link href="../../static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="../../static/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="../../static/css/animate.css" rel="stylesheet">
+    <link href="../../static/css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+
+            {% for c in ctf %}
+            <div class="col-sm-4">
+                <div class="contact-box">
+                    <a href="{{c.url}}">
+                        <div class="col-sm-4">
+                            <div class="text-center">
+                                <img alt="image" class="img-circle m-t-xs img-responsive" src="{{c.img_src}}">
+<!--                                <div class="m-t-xs font-bold"></div>-->
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <h3><strong>{{c.name}}</strong></h3>
+                            <address>
+                            <strong>简介：{{c.title}}</strong><br>
+                            <br>
+                           <a href="{{t.url}}">{{c.name}}</a><br>
+                            <abbr title="Phone"></abbr>
+                        </address>
+                        </div>
+                        <div class="clearfix"></div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="../../static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="../../static/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- 自定义js -->
+    <script src="../../static/js/content.js?v=1.0.0"></script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('.contact-box').each(function () {
+                animationHover(this, 'pulse');
+            });
+        });
+    </script>
+
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=9051096" charset="UTF-8"></script>
+    <!--统计代码，可删除-->
+
+</body>
+
+</html>
