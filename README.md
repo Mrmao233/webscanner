@@ -8,6 +8,8 @@
 
 2.本项目的前端界面在开源项目H+的基础上开发，项目功能开发思路参考[Sec-tools](https://gitee.com/jwt1399/Sec-Tools.git)
 
+3.Gitee地址：[webscanner漏洞扫描器](https://gitee.com/maverick0407/webscanner)
+
 ## 项目前置工作
 
 1.项目克隆
