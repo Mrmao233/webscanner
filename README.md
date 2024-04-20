@@ -8,7 +8,9 @@
 
 2.本项目的前端界面在开源项目H+的基础上开发，项目功能开发思路参考[Sec-tools](https://gitee.com/jwt1399/Sec-Tools.git)
 
-3.Gitee地址：[webscanner漏洞扫描器](https://gitee.com/maverick0407/webscanner)
+3.Github地址：[webscanner](https://github.com/Mrmao233/webscanner.git)
+
+
 
 ## 项目前置工作
 
@@ -178,4 +180,28 @@
 4.一旦您的贡献被接受并合并到主仓库中，您的更改将会被包含在下一个发布版本中。
 
 5.如果对项目有好的建议或者对项目有更多问题，欢迎咨询作者邮箱：1484333494@qq.com😊
+
+6.网上很多都是收费的，作者当时写的时候也碰到了很多问题，所以如果你觉得这个项目帮助了你，可以考虑为作者后续开发更多好的项目提供一点援助，万分感谢！
+
+![image-20230820040007672](https://gitee.com/maverick0407/webscanner/raw/master/static/media/fdc997ca12007398a8c60abbef32e81c.jpg)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
