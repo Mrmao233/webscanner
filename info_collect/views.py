@@ -36,7 +36,8 @@ def seo(request):
                 return render(request, "info_collect/seo.html",
                               {"seo_data_api": seo_data_api, "subdomain_data": subdomain_data,
                                "seo_data_spider": seo_data_spider, "rtime": rtime})
-            except:
+            except Exception as e:
+                print(e)
                 messages.warning(request, "服务器连接超时获url被屏蔽或url格式不正确，请重新输入！")
                 return render(request, "info_collect/seo.html")
     return render(request, "info_collect/seo.html")

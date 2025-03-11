@@ -269,17 +269,11 @@
 
 						                else if (data.task_state == 'PENDING!!!') {
 						                    console.log('Task is still running.');
-						                    //获取当前进度条宽度和文本内容
-						                    var currentWidth = $("#progress-bar").width();
-						                    var currentText = $("#progress-bar").text();
-						                    console.log(currentWidth)
-						                    //增加10%的宽度和文本内容
-						                    var newWidth = currentWidth + $("#progress-bar").parent().width() * 0.01;
-						                    var newText = (newWidth / $("#progress-bar").parent().width() * 100).toFixed(0) + '%';
-						                    console.log(newWidth)
-						                    //修改进度条宽度和文本内容
-						                    $("#progress-bar").css('width', newWidth + 'px');
-						                    $("#progress-bar").text(newText);
+											//获取当前进度
+											var progress = data.progress || 0;
+											// 更新进度条宽度和文本内容
+    										$("#progress-bar").css('width', progress + '%');
+    										$("#progress-bar").text(progress + '%');
 						                }
 						            },
 						            error: function(jqXHR, textStatus, errorThrown) {

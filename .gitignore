@@ -1,0 +1,7 @@
+# 忽略所有 .pyc 文件
+*.pyc
+*.rdp
+# 忽略 Python 编译文件和目录
+__pycache__/
+*.pyo
+*.pyd

@@ -18,6 +18,7 @@ from .forms import PortScanForm
 from django.core import serializers
 from celery_tasks.portscan.tasks import scan_port
 from django.http import JsonResponse, HttpResponse
+from django.core.cache import cache
 
 """
 启动扫描功能和加载页面
@@ -64,7 +65,9 @@ def portscan_progress(request):
             # 从session中取到的task_id只是一个字符串，需要通过AsyncResult()函数把他转换成task对象，才能进行对应的操作
             task = AsyncResult(task_id)
             if task.state == "PENDING":  # PENDING代表任务正在执行
-                return JsonResponse({'task_state': "PENDING!!!"})
+                progress = cache.get("scan_progress_portscan")  # 从缓存中获取进度
+                print(f"进度:{progress}")
+                return JsonResponse({'task_state': "PENDING!!!", 'progress': progress})
             if task.state == "SUCCESS":  # SUCCESS代表任务执行完毕
                 # 如果执行完毕，那么得到的开放端口数据应该会存入数据库，此时从数据库拿到任务扫描后返回的数据，并返回到前端页面去
                 open_ports = ScanResult.objects.filter(url=url)

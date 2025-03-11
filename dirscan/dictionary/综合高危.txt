@@ -20,6 +20,7 @@
 /database/data.asp
 /database/database.mdb
 /database/database.asp
+/vuls
 /1.zip
 /1.rar
 /1.7z

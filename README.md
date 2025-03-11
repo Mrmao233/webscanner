@@ -4,13 +4,25 @@
 
 ## 项目简介
 
-1.此扫描器基于Python3.8.0和Django2.2开发，是一款全开源的漏洞扫描器，借助Celery插件实现了异步的端口扫描和后台扫描，而漏洞扫描则使用了著名漏洞扫描工具AWVS的API实现。
+1.基于Python3.8.0和Django2.2开发，借助Celery插件实现了异步的端口扫描和后台扫描，而漏洞扫描则使用了AWVS的API实现。
 
 2.本项目的前端界面在开源项目H+的基础上开发，项目功能开发思路参考[Sec-tools](https://gitee.com/jwt1399/Sec-Tools.git)
 
 3.Github地址：[webscanner](https://github.com/Mrmao233/webscanner.git)
 
+## 更新
 
+**2025.1.14**
+
+- 修复了dirscan无法扫描的bug。
+- 精简了requirements和数据库迁移文件。
+- 把redis移除了项目，精简了项目。
+
+**2025.1.15**
+
+- eventlet库的dns解析有问题，更换为gavent。
+- 修复首页无法爬取到信息的bug。
+- 修改扫描过程进度条不按照真实进度更新的问题。
 
 ## 项目前置工作
 
@@ -18,15 +30,11 @@
 
 `git clone https://gitee.com/maverick0407/webscanner.git`
 
-2.激活虚拟环境
-
-`venv\Scripts\activate`
-
-3.安装项目依赖
+2.安装项目依赖
 
 `pip install -r requirements.txt`
 
-4.数据库同步以及配置
+3.数据库同步以及配置
 
 - 项目需要使用mysql和redis数据库，所以请在部署本项目前先安装mysql和redis
 
@@ -54,25 +62,15 @@
 
 - 项目的数据库文件已经导出在根目录下的webscan.sql，导入方法请自行百度
 
-
-
 ## 项目部署
 
-1.开启redis服务
+**1.开启redis服务**
 
-- 安装了redis服务后，进入到项目里的Redis-x64-5.0.14.1文件夹，使用如下命令开启redis服务
+**2.开启celery服务**
 
-  `redis-server.exe redis.windows.conf`
+- 新开一个控制台开启celery服务。开启celery服务前，请确定环境中已经安装了celery库.
 
-2.开启celery服务
-
-- redis服务开启后新开一个控制台窗口，输入如下命令开启celery服务。开启celery服务前，请确定虚拟环境中已经安装了celery库，且命令中的"-P eventlet"选项只在windows环境中加入，如果是linux环境部署则不需要此选项
-
-  `celery -A celery_tasks.main worker -l info -P eventlet --pool=solo`
-
-- **切记redis和celery的开启顺序不能改变，先开启redis再开启celery，因为celery的正常工作需要redis来作为缓存数据库。成功开启celery应该如下图所示（左celery 右redis数据库）**
-
-  ![image-20230820032139974](https://gitee.com/maverick0407/webscanner/raw/master/static/media/image-20230820032139974.png)
+  `celery -A celery_tasks.main worker -l info -P gevent`
 
 3.启动服务
 
@@ -90,7 +88,7 @@
 
 **4.漏洞扫描**
 
-- **如果想使用漏洞扫描功能，则需要下载AWVS13.0漏洞扫描工具，并在settings.py中的第130行配置AWVS的密钥信息**
+- **如果想使用漏洞扫描功能，则需要下载AWVS漏洞扫描工具，并在settings.py中的第130行配置AWVS的密钥信息**
 
   ```python
   # 1.5配置awvs的密钥信息
@@ -181,9 +179,7 @@
 
 5.如果对项目有好的建议或者对项目有更多问题，欢迎咨询作者邮箱：1484333494@qq.com😊
 
-6.网上很多都是收费的，作者当时写的时候也碰到了很多问题，所以如果你觉得这个项目帮助了你，可以考虑为作者后续开发更多好的项目提供一点援助，万分感谢！
 
-![image-20230820040007672](https://gitee.com/maverick0407/webscanner/raw/master/static/media/fdc997ca12007398a8c60abbef32e81c.jpg)
 
 
 

@@ -96,6 +96,14 @@ DATABASES = {
     }
 }
 
+# 缓存配饰用Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',  # Redis 地址
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -127,7 +135,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 # 1.5配置awvs的密钥信息
-AWVS_API_KEY = "1986ad8c0a5b3df4d7028d5f3c06e936c4441913fd2af4ef3942a8ef539e98df9"
+AWVS_API_KEY = "1986ad8c0a5b3df4d7028d5f3c06e936c76b08074e7714c049f711a490763207b"
 
 USE_I18N = True
 

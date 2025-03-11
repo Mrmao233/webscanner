@@ -38,7 +38,7 @@ def charts_index(request):
     加载首页页面
     """
     cwe_info = CWE_INFO.objects.all()
-    article_info = Article_info.objects.all()
+    article_info = Article_info.objects.all().order_by('-date')
     vul_result = ScanResult.objects.all()
     awvs_obj = awvs()
     scan_id = awvs_obj.check_scan_id()  # 获得扫描对象的扫描id,获得的数据是一个列表，包括所有历史的扫描任务

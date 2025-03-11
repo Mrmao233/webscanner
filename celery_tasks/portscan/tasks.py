@@ -1,11 +1,11 @@
-"""
-===============
-@author:maverick0407
-@time:2023/4/03
-@email:1484333494@qq.com
-@ide_version:PyCharm
-===============
-"""
+# """
+# ===============
+# @author:maverick0407
+# @time:2023/4/03
+# @email:1484333494@qq.com
+# @ide_version:PyCharm
+# ===============
+# """
 from celery_tasks.main import app
 import time
 import socket
@@ -15,6 +15,7 @@ import concurrent.futures
 import socket
 import socket
 import threading
+from django.core.cache import cache
 
 class PortScanner:
     def __init__(self, host,ports_per_thread=140):
@@ -57,12 +58,13 @@ class PortScanner:
         参数:
             ports (list[int]): 需要扫描的端口号列表。
         """
+        total_ports = len(ports)
         for port in ports:
             sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sk.settimeout(1)
             try:
                 sk.connect((self.host, port))
-                print("Connected to port " + str(port) + " successfully!  " + str((++self.i)/65535) + "%")
+                print("Connected to port " + str(port) + " successfully! ")
                 #如果端口开放，就存入数据库，并且存入之前要先检查数据库中是否有相同数据，如果有，就不存了
                 existing_results = ScanResult.objects.filter(url=self.host, port=port)
                 if existing_results:
@@ -72,8 +74,13 @@ class PortScanner:
                     result.save()
                 self.open_ports.append(port)
             except Exception:
-                print("Connected to port " + str(port) + " failed!  " + str((++self.i)/65535) + "%")
-                pass
+                print("Connected to port " + str(port) + " failed!  ")
+            finally:
+                sk.close()
+                self.i += 1
+                progress = int((self.i / total_ports) * 100)
+                print(progress, "%")
+                cache.set("scan_progress_portscan", progress, timeout=3600)  # 更新缓存
 
 
 @app.task
@@ -81,75 +88,7 @@ def scan_port(host):
     scanner = PortScanner(host)
     start = time.time()
     print("start ")
-    scanner.scan(start_port=0, end_port=65535)
+    scanner.scan(start_port=0, end_port=100)
     print("OPEN_PORTS:", scanner.open_ports)
     print("ends, it takes %s " % (time.time()-start))
     return scanner.open_ports
-
-
-# @app.task
-# def scan_port(target_ip):
-#     start = time.time()
-#     print("start ")
-#     scanner = PortScanner(target_ip)
-#     scanner.scan()
-#     print("THIS",scanner.open_ports)
-#     print("ends, it takes %s " %(time.time()-start))
-#多线程版本，但是线程开太多了资源耗尽会报错
-# class PortScanner:
-#     def __init__(self, host):
-#         self.host = host
-#         self.open_ports = []
-#
-#     def scan(self, start_port=0, end_port=65535):
-#         threads = []
-#         for port in range(start_port, end_port + 1):
-#             thread = threading.Thread(target=self._socket_connect, args=(self.host, port))
-#             threads.append(thread)
-#             thread.start()
-#
-#         for thread in threads:
-#             thread.join()
-#
-#     def _socket_connect(self, host, port):
-#         sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#         sk.settimeout(1)
-#         try:
-#             sk.connect((host, port))
-#             print("Connected to port " + str(port) + " successfully!")
-#             ScanResult.objects.create(url=host, port=port)
-#             self.open_ports.append(port)
-#         except Exception:
-#             print("Connected to port " + str(port) + " Faild!")
-#             pass
-
-
-
-#单线程版本----------太慢了，所以注释掉
-# class PortScanner:
-#     def __init__(self, target_ip):
-#         self.target_ip = target_ip
-#         self.open_ports = []
-#         self.low = 20
-#         self.high = 26
-#     def get_total_ports(self):
-#         return self.high - self.low
-#     def scan(self):
-#         for port in range(self.low, self.high):
-#             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#             sock.settimeout(1)
-#             try:
-#                 sock.connect((self.target_ip, port))
-#                 print("connect", port)
-#                 self.open_ports.append(port)
-#                 existing_results = ScanResult.objects.filter(url=self.target_ip, port=port)
-#                 if existing_results:
-#                     pass
-#                 else:
-#                     result = ScanResult(url=self.target_ip, port=port)
-#                     result.save()
-#
-#             except:
-#                 print("error connect", port)
-#             finally:
-#                 sock.close()

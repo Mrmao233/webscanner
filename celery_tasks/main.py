@@ -11,6 +11,7 @@ from celery import Celery
 import os
 
 # 读取Django的配置
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webscanner.settings')
 
 # 创建celery对象，并指定配置
@@ -18,6 +19,9 @@ app = Celery("webscanner")
 
 # celery项目配置：worker代理人以及存放位置等配置信息，指定任务存储到哪里
 app.config_from_object('celery_tasks.config')
+
+# 使用 gevent 作为并发库
+app.conf.worker_pool = 'gevent'
 
 # 任务位置
 app.autodiscover_tasks([
@@ -28,7 +32,7 @@ app.autodiscover_tasks([
 
 '''启动命令：
 
-celery:  celery -A celery_tasks.main worker -l info -P eventlet --pool=solo
+celery:  celery -A celery_tasks.main worker -l info -P gevent
 
 redis:   redis-server.exe redis.windows.conf
 '''
